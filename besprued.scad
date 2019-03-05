@@ -1,8 +1,13 @@
 acceptable_epsilon=0.0001; // how much bigger to make some cuts out of the top surface. Mostly just to see it better in preview with less graphical artifacts. Can probably bet set to zero without anything bad happening.
 
-module mold_shell(horizontal_thickness, vertical_thickness) {
+module mold_shell(horizontal_thickness, vertical_thickness, hull_mode) {
 	minkowski() {
-		children();
+		if (hull_mode) { 
+			hull() 
+				children();
+		} else {
+			children();
+		}
 		cylinder(r=horizontal_thickness, h=vertical_thickness*2, center=true);
 	} 
 }
@@ -21,10 +26,11 @@ module mold_with_sprues(
 	, pour_sprue_height=15
 	, pour_sprue_edge_thickness=3
 	, air_sprue_diameter = 2
+	, hull_mode = false
 	) {
 	difference() {  // We'll make the mold and cut out the appropriate sprue holes
 		union() { // the solid part.
-			mold_shell(horizontal_thickness, vertical_thickness) {
+			mold_shell(horizontal_thickness, vertical_thickness,hull_mode) {
 				children();
 			}
 			for (loc = pour_sprue_locations) {
